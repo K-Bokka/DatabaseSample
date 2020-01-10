@@ -1,5 +1,6 @@
 package com.kbokka.android.databasesample
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     stmt.bindLong(1, _cocktailId.toLong())
     stmt.executeUpdateDelete()
 
-    val sqlInsert = "INSERT INTO cocktailmemos (_id, note, text) VALUES (?, ?, ?)"
+    val sqlInsert = "INSERT INTO cocktailmemos (_id, name, note) VALUES (?, ?, ?)"
     stmt = db.compileStatement(sqlInsert)
     stmt.bindLong(1, _cocktailId.toLong())
     stmt.bindString(2, _cocktailName)
@@ -60,6 +61,19 @@ class MainActivity : AppCompatActivity() {
 
       val btnSave = findViewById<Button>(R.id.btnSave)
       btnSave.isEnabled = true
+
+      val db = _helper.readableDatabase
+      val sql = "SELECT * FROM cocktailmemos WHERE _id = ${_cocktailId}"
+      val cursor = db.rawQuery(sql, null)
+      var note = ""
+
+      while (cursor.moveToNext()) {
+        val idxNote = cursor.getColumnIndex("note")
+        note = cursor.getString(idxNote)
+      }
+
+      val etNote = findViewById<EditText>(R.id.etNote)
+      etNote.setText(note)
     }
   }
 }
